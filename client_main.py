@@ -2,9 +2,6 @@ import customtkinter
 from mediawikiapi import MediaWikiAPI
 from pygame import mixer
 from selenium import webdriver
-from selenium.webdriver import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 import time
 
