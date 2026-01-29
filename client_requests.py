@@ -2,7 +2,7 @@ import customtkinter
 from mediawikiapi import MediaWikiAPI
 from pygame import mixer
 
-def main():
+def main(lobby_code):
     mixer.init()
 
     customtkinter.set_appearance_mode("System")  # Modes: system (default), light, dark
@@ -10,7 +10,7 @@ def main():
 
     req_root = customtkinter.CTk()
     req_root.geometry("400x240")
-    req_root.title("Submit an article")
+    req_root.title(f"Submit an article ({lobby_code})")
 
     result = {  "suggestion": None  }
 
@@ -60,4 +60,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(lobby_code="")
