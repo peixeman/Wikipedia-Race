@@ -9,8 +9,8 @@ import client_main as clm
 import client_requests as clr
 
 
-# Server configuration - UPDATE THIS WITH YOUR CLOUD SERVER ADDRESS
-SERVER_ADDRESS = "your-server.com"  # e.g., "game.myserver.com" or "123.45.67.89"
+# Server configuration
+SERVER_ADDRESS = "wikipedia-race.railway.internal"  # e.g., "game.myserver.com" or "123.45.67.89"
 TCP_PORT = 5555
 BUFFER_SIZE = 4096
 
