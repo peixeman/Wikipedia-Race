@@ -1,12 +1,12 @@
 import customtkinter
 import json
 from mediawikiapi import MediaWikiAPI
+import os
 import random
 import socket
 import string
 import time
 import threading
-import os
 
 
 # Server configuration
@@ -474,4 +474,5 @@ class WikiRaceServer:
 
 if __name__ == "__main__":
     server = WikiRaceServer()
+
     server.run()
