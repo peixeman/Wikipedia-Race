@@ -114,8 +114,10 @@ class WikiRaceServer:
                     lobby_code = message.get("lobby_code")
                     
                     # Create lobby if it doesn't exist
-                    if lobby_code not in self.lobbies:
+                    if lobby_code == "NG":
                         lobby_code = self.create_lobby()
+                    elif lobby_code not in self.lobbies:
+                        break
                     
                     client_lobby = lobby_code
                     lobby = self.lobbies[lobby_code]
