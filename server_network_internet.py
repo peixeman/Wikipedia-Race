@@ -78,7 +78,9 @@ class WikiRaceServer:
         client_lobby = None
 
         try:
+            counter = 0
             while self.running:
+                counter += 1
                 data = client_socket.recv(BUFFER_SIZE).decode()
                 if not data:
                     break
@@ -118,7 +120,7 @@ class WikiRaceServer:
                         print(f"{lobby["clients"][client_socket]["name"]} submitted article request")
                         
                         # Check if all players ready, auto-start
-                        if all(c["ready"] for c in lobby["clients"].values()):
+                        if all(c["ready"] for c in lobby["clients"].values()) and counter >= 100:
                             print(f"All players ready in lobby {client_lobby}, starting game...")
                             self.start_game(client_lobby)
 
