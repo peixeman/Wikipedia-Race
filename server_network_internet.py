@@ -1,6 +1,7 @@
 import argparse
 import json
 from mediawikiapi import MediaWikiAPI
+import os
 import random
 import socket
 import string
@@ -9,7 +10,7 @@ import threading
 
 
 # Server configuration
-TCP_PORT = 5555
+TCP_PORT = int(os.environ.get("PORT", 5555))
 BUFFER_SIZE = 4096
 
 
