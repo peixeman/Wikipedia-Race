@@ -50,7 +50,7 @@ class WikiRaceClient:
             })
 
             self.connected = True
-            self.update_status(f"Connected to lobby {lobby}")
+            self.update_status(f"Connected to lobby")
 
             # Start listening thread
             threading.Thread(target=self.listen_to_server, daemon=True).start()
