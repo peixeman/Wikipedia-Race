@@ -22,12 +22,14 @@ class WikiRaceServer:
         self.mediawiki = MediaWikiAPI()
         self.headless = headless
 
+
     def generate_lobby_code(self):
         """Generate a unique 4-character lobby code"""
         while True:
             code = "".join(random.choices(string.ascii_uppercase + string.digits, k=4))
             if code not in self.lobbies:
                 return code
+
 
     def get_local_ip(self):
         """Get the local IP address"""
@@ -40,6 +42,7 @@ class WikiRaceServer:
         except:
             return "127.0.0.1"
 
+
     def create_lobby(self):
         """Create a new lobby"""
         lobby_code = self.generate_lobby_code()
@@ -51,6 +54,25 @@ class WikiRaceServer:
         }
         print(f"Created lobby: {lobby_code}")
         return lobby_code
+
+
+    def lobby_countdown(self, lobby_code):
+        lobby = self.lobbies[lobby_code]
+        start = time.time()
+
+        while time.time() - start < 10:
+            if lobby_code not in self.lobbies:
+                return
+            if not all(c["ready"] for c in lobby["clients"].values()):
+                lobby["countdown_running"] = False
+                return
+            time.sleep(0.25)
+
+        if lobby_code in self.lobbies and all(c["ready"] for c in lobby["clients"].values()):
+            self.start_game(lobby_code)
+
+        lobby["countdown_running"] = False
+
 
     def start_tcp_server(self):
         """Start TCP server to accept client connections"""
@@ -72,13 +94,13 @@ class WikiRaceServer:
             except:
                 break
 
+
     def handle_client(self, client_socket, address):
         """Handle individual client connections"""
         print(f"Client connected from {address}")
         client_lobby = None
 
         try:
-            all_ready_time = None
             while self.running:
                 data = client_socket.recv(BUFFER_SIZE).decode()
                 if not data:
@@ -117,16 +139,16 @@ class WikiRaceServer:
                         lobby["clients"][client_socket]["ready"] = True
                         print(f"{lobby["clients"][client_socket]["name"]} submitted article request")
 
-                        if all_ready_time is None and all(c["ready"] for c in lobby["clients"].values()):
-                            all_ready_time = time.time()
-                        elif all_ready_time is not None and not all(c["ready"] for c in lobby["clients"].values()):
-                            all_ready_time = None
-                        
-                        # Check if all players ready, auto-start
-                        if all(c["ready"] for c in lobby["clients"].values()) and time.time() - all_ready_time >= 10:
-                            print(time.time() - all_ready_time)
-                            print(f"All players ready in lobby {client_lobby}, starting game...")
-                            self.start_game(client_lobby)
+                        if all(c["ready"] for c in lobby["clients"].values()):
+                            if "all_ready_time" not in lobby or lobby["all_ready_time"] is None:
+                                lobby["all_ready_time"] = time.time()
+                        else:
+                            lobby["all_ready_time"] = None
+
+                        if all(c["ready"] for c in lobby["clients"].values()):
+                            if not lobby.get("countdown_running", False):
+                                lobby["countdown_running"] = True
+                                threading.Thread(target=self.lobby_countdown, args=(client_lobby,), daemon=True).start()
                 elif msg_type == "game_result":
                     if client_lobby and client_lobby in self.lobbies:
                         lobby = self.lobbies[client_lobby]
@@ -156,12 +178,14 @@ class WikiRaceServer:
             if client_lobby and client_lobby in self.lobbies:
                 self.remove_client(client_socket, client_lobby)
 
+
     def send_message(self, client_socket, message):
         """Send JSON message to a client"""
         try:
             client_socket.send(json.dumps(message).encode())
         except:
             pass
+
 
     def broadcast_to_lobby(self, lobby_code, message):
         """Send message to all clients in a lobby"""
@@ -171,6 +195,7 @@ class WikiRaceServer:
         lobby = self.lobbies[lobby_code]
         for client in list(lobby["clients"].keys()):
             self.send_message(client, message)
+
 
     def remove_client(self, client_socket, lobby_code):
         """Remove disconnected client"""
@@ -194,6 +219,7 @@ class WikiRaceServer:
         except:
             pass
 
+
     def start_game(self, lobby_code):
         """Start the game in a specific lobby"""
         if lobby_code not in self.lobbies:
@@ -201,6 +227,9 @@ class WikiRaceServer:
             
         lobby = self.lobbies[lobby_code]
         if len(lobby["clients"]) == 0:
+            return
+
+        if lobby["game_active"]:
             return
 
         # Collect all article requests
@@ -239,6 +268,7 @@ class WikiRaceServer:
 
         lobby["game_active"] = True
         lobby["game_results"].clear()
+
 
     def calculate_and_send_results(self, lobby_code):
         """Calculate scores and send results to all clients in a lobby"""
@@ -283,6 +313,7 @@ class WikiRaceServer:
         })
 
         lobby["game_active"] = False
+
 
     def run(self):
         """Run the server"""
