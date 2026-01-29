@@ -236,7 +236,7 @@ class WikiRaceClient:
             # Restart client in new process
             import subprocess
             mixer.stop()
-            subprocess.Popen([sys.executable, __file__, self.player_name, self.lobby_code, self.music_on])
+            subprocess.Popen([sys.executable, self.player_name, self.lobby_code, self.music_on])
 
             # Close results window
             results_window.destroy()
