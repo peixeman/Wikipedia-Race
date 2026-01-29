@@ -78,10 +78,8 @@ class WikiRaceServer:
         client_lobby = None
 
         try:
-            counter = 0
+            all_ready_time = None
             while self.running:
-                counter += 1
-                print(counter)
                 data = client_socket.recv(BUFFER_SIZE).decode()
                 if not data:
                     break
@@ -112,19 +110,23 @@ class WikiRaceServer:
                         "lobby_code": lobby_code,
                         "message": f"Connected to lobby {lobby_code}"
                     })
-
                 elif msg_type == "article_request":
                     if client_lobby and client_lobby in self.lobbies:
                         lobby = self.lobbies[client_lobby]
                         lobby["article_requests"][client_socket] = message.get("article", "")
                         lobby["clients"][client_socket]["ready"] = True
                         print(f"{lobby["clients"][client_socket]["name"]} submitted article request")
+
+                        if all_ready_time is None and all(c["ready"] for c in lobby["clients"].values()):
+                            all_ready_time = time.time()
+                        elif all_ready_time is not None and not all(c["ready"] for c in lobby["clients"].values()):
+                            all_ready_time = None
                         
                         # Check if all players ready, auto-start
-                        if all(c["ready"] for c in lobby["clients"].values()) and counter >= 10:
+                        if all(c["ready"] for c in lobby["clients"].values()) and time.time() - all_ready_time >= 10:
+                            print(time.time() - all_ready_time)
                             print(f"All players ready in lobby {client_lobby}, starting game...")
                             self.start_game(client_lobby)
-
                 elif msg_type == "game_result":
                     if client_lobby and client_lobby in self.lobbies:
                         lobby = self.lobbies[client_lobby]
@@ -140,7 +142,6 @@ class WikiRaceServer:
                         if len(lobby["game_results"]) == len(lobby["clients"]):
                             print(f"All players finished in lobby {client_lobby}")
                             self.calculate_and_send_results(client_lobby)
-
                 elif msg_type == "play_again":
                     if client_lobby and client_lobby in self.lobbies:
                         lobby = self.lobbies[client_lobby]
