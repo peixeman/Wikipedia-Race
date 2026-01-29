@@ -112,7 +112,7 @@ class WikiRaceServer:
         lobby = self.lobbies[lobby_code]
         start = time.time()
 
-        while time.time() - start < int(10 + (10 / len(lobby["clients"]))):
+        while time.time() - start < int(10 + (10 / len(lobby["clients"]) if len(lobby["clients"]) > 0 else 1)):
             if lobby_code not in self.lobbies:
                 return
             if not all(c["ready"] for c in lobby["clients"].values()):
