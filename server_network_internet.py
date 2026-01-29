@@ -62,6 +62,18 @@ class WikiRaceServer:
                 "time_played": 0.0
             }
 
+    def reset_player_stats(self):
+        """Delete the stats JSON file and clear in-memory stats"""
+        print("Resetting player stats...")
+        self.player_stats = {}
+
+        try:
+            if os.path.exists(PLAYER_STATS_FILE):
+                os.remove(PLAYER_STATS_FILE)
+                print(f"Deleted {PLAYER_STATS_FILE}")
+        except Exception as e:
+            print(f"Failed to delete stats file: {e}")
+
 
     def generate_lobby_code(self):
         """Generate a unique 4-character lobby code"""
@@ -258,6 +270,7 @@ class WikiRaceServer:
             if len(lobby["clients"]) == 0:
                 print(f"Lobby {lobby_code} is empty, deleting...")
                 del self.lobbies[lobby_code]
+                self.reset_player_stats()
         
         try:
             client_socket.close()
@@ -326,7 +339,7 @@ class WikiRaceServer:
         for client_socket, result in lobby["game_results"].items():
             player_name = lobby["clients"][client_socket]["name"]
 
-            # Calculate score (lower is better)
+            # Calculate score
             if result["status"] == "Win":
                 score = int(result["clicks"] + (result["time"] / 5))
             elif result["status"] == "Fold":
