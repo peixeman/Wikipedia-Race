@@ -10,8 +10,8 @@ import client_requests as clr
 
 
 # Server configuration
-SERVER_ADDRESS = "wikipedia-race-production.up.railway.app"
-TCP_PORT = 60
+SERVER_ADDRESS = "crossover.proxy.rlwy.net"
+TCP_PORT = 20904
 BUFFER_SIZE = 4096
 
 
