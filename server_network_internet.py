@@ -330,9 +330,9 @@ class WikiRaceServer:
             if result["status"] == "Win":
                 score = int(result["clicks"] + (result["time"] / 5))
             elif result["status"] == "Fold":
-                score = int(result["clicks"] + result["time"])
+                score = int(result["clicks"] + result["time"] + 100)
             else:
-                score = 200
+                score = 350
 
             self.ensure_player_stats(player_name)
 
