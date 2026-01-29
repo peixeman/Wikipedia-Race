@@ -13,6 +13,8 @@ import threading
 TCP_PORT = int(os.environ.get("PORT", 5555))
 BUFFER_SIZE = 4096
 
+PLAYER_STATS_FILE = "wiki_race_player_stats.json"
+
 
 class WikiRaceServer:
     def __init__(self, headless=False):
@@ -21,6 +23,44 @@ class WikiRaceServer:
         self.running = True
         self.mediawiki = MediaWikiAPI()
         self.headless = headless
+        self.player_stats = self.load_player_stats()
+
+
+    def load_player_stats(self):
+        """Load persistent player stats from disk"""
+        if not os.path.exists(PLAYER_STATS_FILE):
+            return {}
+
+        try:
+            with open(PLAYER_STATS_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, dict):
+                    return data
+        except Exception as e:
+            print(f"Failed to load stats file: {e}")
+
+        return {}
+
+
+    def save_player_stats(self):
+        """Save persistent player stats to disk"""
+        try:
+            with open(PLAYER_STATS_FILE, "w", encoding="utf-8") as f:
+                json.dump(self.player_stats, f, indent=2)
+        except Exception as e:
+            print(f"Failed to save stats file: {e}")
+
+
+    def ensure_player_stats(self, player_name):
+        """Ensure a player exists in the stats dict"""
+        if player_name not in self.player_stats:
+            self.player_stats[player_name] = {
+                "points": 0,
+                "wins": 0,
+                "clicks": 0,
+                "games_played": 0,
+                "time_played": 0.0
+            }
 
 
     def generate_lobby_code(self):
@@ -127,6 +167,9 @@ class WikiRaceServer:
                             "address": address,
                             "ready": False
                         }
+
+                        self.ensure_player_stats(player_name)
+                        self.save_player_stats()
 
                         print(f"{player_name} joined lobby {lobby_code}")
                         self.send_message(client_socket, {
@@ -291,16 +334,30 @@ class WikiRaceServer:
             else:
                 score = 200
 
+            self.ensure_player_stats(player_name)
+
+            self.player_stats[player_name]["points"] += score
+            self.player_stats[player_name]["games_played"] += 1
+            self.player_stats[player_name]["clicks"] += int(result["clicks"])
+            self.player_stats[player_name]["time_played"] += round(float(result["time"]))
+            if result["status"] == "Win":
+                self.player_stats[player_name]["wins"] += 1
+
+            total_points = self.player_stats[player_name]["points"]
+
             results.append({
                 "name": player_name,
                 "status": result["status"],
                 "clicks": result["clicks"],
                 "time": result["time"],
-                "score": score
+                "score": score,
+                "total_points": total_points
             })
 
-        # Sort by score (lower is better)
-        results.sort(key=lambda x: x["score"])
+        self.save_player_stats()
+
+        # Sort by score
+        results.sort(key=lambda x: x["total_points"])
 
         # Assign rankings
         for i, result in enumerate(results):
