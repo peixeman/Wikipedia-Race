@@ -89,6 +89,9 @@ class WikiRaceClient:
 
         if msg_type == "join_success":
             print("Successfully joined lobby")
+            updated_lobby_code = message.get("lobby_code")
+            if updated_lobby_code:
+                self.lobby_code = updated_lobby_code
             # Schedule article request on main thread
             if self.root:
                 self.root.after(100, self.request_article)
@@ -123,7 +126,7 @@ class WikiRaceClient:
             self.root = None
 
         # Get article request from player
-        article_request = clr.main()
+        article_request = clr.main(self.lobby_code)
 
         # Send to server
         self.send_message({
@@ -163,9 +166,19 @@ class WikiRaceClient:
 
         customtkinter.CTkLabel(
             self.root,
-            text="Waiting for game to start...",
+            text="Waiting for game",
             font=("Arial", 20)
-        ).pack(pady=50)
+        ).pack()
+        customtkinter.CTkLabel(
+            self.root,
+            text=self.lobby_code,
+            font=("Arial", 30, "bold")
+        ).pack()
+        customtkinter.CTkLabel(
+            self.root,
+            text="to start...",
+            font=("Arial", 20)
+        ).pack()
 
         self.status_label = customtkinter.CTkLabel(
             self.root,
