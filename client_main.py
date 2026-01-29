@@ -198,7 +198,7 @@ def main(start_article, end_article, player_name, show_results_dialog=True):
         driver.get(mediawiki.page(start_article).url)
     except Exception as e:
         print(e)
-        exit(-1)
+        raise SystemExit(-1)
     else:
         #window_handle = driver.current_window_handle
         assert len(driver.window_handles) == 1
