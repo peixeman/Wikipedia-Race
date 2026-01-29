@@ -202,11 +202,6 @@ class WikiRaceServer:
                         else:
                             lobby["all_ready_time"] = None
 
-                        self.send_message(client_socket, {
-                            "type": "lobby_size",
-                            "size": len(self.lobbies[message.get("lobby_code")]["clients"])
-                        })
-
                         if all(c["ready"] for c in lobby["clients"].values()):
                             if not lobby.get("countdown_running", False):
                                 lobby["countdown_running"] = True
