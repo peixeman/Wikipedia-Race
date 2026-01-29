@@ -115,23 +115,25 @@ class WikiRaceServer:
                     
                     # Create lobby if it doesn't exist
                     if lobby_code not in self.lobbies:
-                        lobby_code = self.create_lobby()
-                    
-                    client_lobby = lobby_code
-                    lobby = self.lobbies[lobby_code]
-                    
-                    lobby["clients"][client_socket] = {
-                        "name": player_name,
-                        "address": address,
-                        "ready": False
-                    }
-                    
-                    print(f"{player_name} joined lobby {lobby_code}")
-                    self.send_message(client_socket, {
-                        "type": "join_success",
-                        "lobby_code": lobby_code,
-                        "message": f"Connected to lobby {lobby_code}"
-                    })
+                        print("Rejected lobby join, no lobby found")
+                    else:
+                        if lobby_code == "NG":
+                            lobby_code = self.create_lobby()
+                        client_lobby = lobby_code
+                        lobby = self.lobbies[lobby_code]
+
+                        lobby["clients"][client_socket] = {
+                            "name": player_name,
+                            "address": address,
+                            "ready": False
+                        }
+
+                        print(f"{player_name} joined lobby {lobby_code}")
+                        self.send_message(client_socket, {
+                            "type": "join_success",
+                            "lobby_code": lobby_code,
+                            "message": f"Connected to lobby {lobby_code}"
+                        })
                 elif msg_type == "article_request":
                     if client_lobby and client_lobby in self.lobbies:
                         lobby = self.lobbies[client_lobby]
