@@ -2,6 +2,7 @@ import customtkinter
 import json
 from pygame import mixer
 import socket
+import subprocess
 import sys
 import threading
 
@@ -16,7 +17,7 @@ BUFFER_SIZE = 4096
 
 
 class WikiRaceClient:
-    def __init__(self, name=None, connected=False, running=True, lobby=None, music_on="On"):
+    def __init__(self, name=None, connected=False, running=True, lobby=None, music_on="Off"):
         self.server_socket = None
         self.server_ip = SERVER_ADDRESS
         self.server_port = TCP_PORT
@@ -30,6 +31,7 @@ class WikiRaceClient:
         # GUI
         self.root = None
         self.status_label = None
+
 
     def connect_to_server(self, lobby):
         """Connect to server using lobby code"""
@@ -60,12 +62,14 @@ class WikiRaceClient:
             self.update_status(f"Connection failed: {e}")
             return False
 
+
     def send_message(self, message):
         """Send JSON message to server"""
         try:
             self.server_socket.send(json.dumps(message).encode())
         except Exception as e:
             print(f"Error sending message: {e}")
+
 
     def listen_to_server(self):
         """Listen for messages from server"""
@@ -82,6 +86,7 @@ class WikiRaceClient:
                 break
 
         self.connected = False
+
 
     def handle_server_message(self, message):
         """Handle messages from server - MUST schedule UI updates on main thread"""
@@ -110,6 +115,7 @@ class WikiRaceClient:
             print("Received final results:", results)
             self.show_results(results)
 
+
     def start_game_callback(self, start_article, end_article):
         """Callback to start game on main thread"""
         # Close lobby window
@@ -119,6 +125,7 @@ class WikiRaceClient:
 
         # Launch game
         self.play_game(start_article, end_article)
+
 
     def request_article(self):
         """Get article request from player"""
@@ -138,6 +145,7 @@ class WikiRaceClient:
 
         # Show waiting screen
         self.show_waiting_screen()
+
 
     def play_game(self, start_article, end_article):
         """Play the game and send results to server"""
@@ -159,6 +167,7 @@ class WikiRaceClient:
         self.root = customtkinter.CTk()
         self.root.withdraw()  # Hide the window
         self.root.mainloop()
+
 
     def show_waiting_screen(self):
         """Show waiting screen while waiting for game to start"""
@@ -199,6 +208,7 @@ class WikiRaceClient:
         self.root.protocol("WM_DELETE_WINDOW", self.disconnect)
         self.root.mainloop()
 
+
     def show_results(self, results):
         """Show final results screen"""
         results_window = customtkinter.CTk()
@@ -231,12 +241,12 @@ class WikiRaceClient:
         button_frame = customtkinter.CTkFrame(results_window)
         button_frame.pack(pady=20)
 
+
         def play_again():
             if self.connected:
                 self.send_message({"type": "play_again"})
 
             # Restart client in new process
-            import subprocess
             mixer.stop()
             subprocess.Popen([sys.executable, self.player_name, self.lobby_code, self.music_on])
 
@@ -271,6 +281,7 @@ class WikiRaceClient:
         results_window.protocol("WM_DELETE_WINDOW", lambda: [self.disconnect(), results_window.destroy()])
         results_window.mainloop()
 
+
     def update_status(self, message):
         """Update status label"""
         print(message)
@@ -279,6 +290,7 @@ class WikiRaceClient:
                 self.root.after(0, lambda: self.status_label.configure(text=message))
             except:
                 pass
+
 
     def disconnect(self):
         """Disconnect from server"""
@@ -295,6 +307,7 @@ class WikiRaceClient:
             except:
                 pass
 
+
     def manage_music(self, check_var):
         self.music_on = check_var.get()
         if check_var.get() == "On":
@@ -306,6 +319,7 @@ class WikiRaceClient:
                 self.music_on = "Off"
         else:
             mixer.stop()
+
 
     def start(self):
         """Start the client and show join screen"""
@@ -415,6 +429,6 @@ if __name__ == "__main__":
         music_setting = sys.argv[-1]
         client = WikiRaceClient(name=player_name, lobby=lobby_code, music_on=music_setting)
     else:
-        client = WikiRaceClient(name=None, lobby=None, music_on="On")
+        client = WikiRaceClient(name=None, lobby=None, music_on="Off")
 
     client.start()
