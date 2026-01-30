@@ -88,13 +88,15 @@ class WikiRaceClient:
         msg_type = message.get("type")
 
         if msg_type == "join_success":
-            print("Successfully joined lobby")
             updated_lobby_code = message.get("lobby_code")
             if updated_lobby_code:
                 self.lobby_code = updated_lobby_code
+            print(f"Successfully joined lobby {lobby_code}")
             # Schedule article request on main thread
             if self.root:
                 self.root.after(100, self.request_article)
+        elif msg_type == "join_rejected":
+            self.update_status(f"Failed to connect to {self.lobby_code}")
         elif msg_type == "game_start":
             start_article = message.get("start_article")
             end_article = message.get("end_article")

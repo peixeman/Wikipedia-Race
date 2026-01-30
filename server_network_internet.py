@@ -168,6 +168,9 @@ class WikiRaceServer:
                     # Create lobby if it doesn't exist
                     if lobby_code not in self.lobbies and lobby_code != "NG":
                         print("Rejected lobby join, no lobby found")
+                        self.send_message(client_socket, {
+                            "type": "join_rejected"
+                        })
                     else:
                         if lobby_code == "NG":
                             lobby_code = self.create_lobby()
