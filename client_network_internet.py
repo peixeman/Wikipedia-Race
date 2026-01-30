@@ -91,7 +91,7 @@ class WikiRaceClient:
             updated_lobby_code = message.get("lobby_code")
             if updated_lobby_code:
                 self.lobby_code = updated_lobby_code
-            print(f"Successfully joined lobby {lobby_code}")
+            print(f"Successfully joined lobby {updated_lobby_code}")
             # Schedule article request on main thread
             if self.root:
                 self.root.after(100, self.request_article)
