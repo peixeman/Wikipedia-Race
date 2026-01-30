@@ -378,7 +378,7 @@ class WikiRaceClient:
 
         def join_game():
             self.player_name = name_entry.get().strip()
-            lobby = code_entry.get().strip().uppper()
+            lobby = code_entry.get().strip().upper()
 
             if not self.player_name:
                 self.update_status("Please enter your name")
