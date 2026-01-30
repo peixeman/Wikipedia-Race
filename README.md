@@ -7,5 +7,9 @@ Email: excaliber632@gmail.com
 ## Known Issues
 * When quitting the game or playing again, the webdriver will open and close itself while reconnecting.
 
+## Future Features
+* When player is finished, show them a "live feed" of players still searching.
+* Countdown mode: Players aim for a score to win the lobby.
+
 ##
 A Python-based server and client for playing multiplayer Wikipedia races.
