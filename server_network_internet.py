@@ -108,7 +108,7 @@ class WikiRaceServer:
         return lobby_code
 
 
-    def lobby_countdown(self, client_socket, lobby_code):
+    def lobby_countdown(self, lobby_code):
         lobby = self.lobbies[lobby_code]
         start = time.time()
 
@@ -119,13 +119,6 @@ class WikiRaceServer:
                 lobby["countdown_running"] = False
                 return
             time.sleep(0.25)
-            self.broadcast_to_lobby(
-                lobby,
-                {
-                    "type": "lobby_update",
-                    "player_count": len(lobby["clients"])
-                }
-            )
 
         if lobby_code in self.lobbies and all(c["ready"] for c in lobby["clients"].values()):
             self.start_game(lobby_code)
@@ -175,9 +168,6 @@ class WikiRaceServer:
                     # Create lobby if it doesn't exist
                     if lobby_code not in self.lobbies and lobby_code != "NG":
                         print("Rejected lobby join, no lobby found")
-                        self.send_message(client_socket, {
-                            "type": "join_rejected"
-                        })
                     else:
                         if lobby_code == "NG":
                             lobby_code = self.create_lobby()
@@ -215,7 +205,7 @@ class WikiRaceServer:
                         if all(c["ready"] for c in lobby["clients"].values()):
                             if not lobby.get("countdown_running", False):
                                 lobby["countdown_running"] = True
-                                threading.Thread(target=self.lobby_countdown, args=(client_lobby,client_socket,), daemon=True).start()
+                                threading.Thread(target=self.lobby_countdown, args=(client_lobby,), daemon=True).start()
                 elif msg_type == "game_result":
                     if client_lobby and client_lobby in self.lobbies:
                         lobby = self.lobbies[client_lobby]

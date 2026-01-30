@@ -105,8 +105,6 @@ class WikiRaceClient:
             # Schedule game start on main thread
             if self.root:
                 self.root.after(100, lambda: self.start_game_callback(start_article, end_article))
-        elif msg_type == "lobby_update":
-            self.update_status(f"{message.get("player_count")} in lobby")
         elif msg_type == "game_results":
             results = message.get("results")
             print("Received final results:", results)
