@@ -119,10 +119,13 @@ class WikiRaceServer:
                 lobby["countdown_running"] = False
                 return
             time.sleep(0.25)
-            self.send_message(client_socket, {
-                "type": "lobby_update",
-                "player_count": len(lobby["clients"])
-            })
+            self.broadcast_to_lobby(
+                lobby,
+                {
+                    "type": "lobby_update",
+                    "player_count": len(lobby["clients"])
+                }
+            )
 
         if lobby_code in self.lobbies and all(c["ready"] for c in lobby["clients"].values()):
             self.start_game(lobby_code)
