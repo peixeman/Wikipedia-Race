@@ -248,7 +248,7 @@ class WikiRaceClient:
 
             # Restart client in new process
             mixer.stop()
-            subprocess.Popen([sys.executable, self.player_name, self.lobby_code, self.music_on])
+            subprocess.Popen([sys.executable, __file__, self.player_name, self.lobby_code, self.music_on])
 
             # Close results window
             results_window.destroy()
@@ -392,9 +392,10 @@ class WikiRaceClient:
         )
         self.status_label.pack(pady=10)
 
-        def join_game():
+        def join_game(lobby=None):
             self.player_name = name_entry.get().strip()
-            lobby = code_entry.get().strip().upper()
+            if lobby is None:
+                lobby = code_entry.get().strip().upper()
 
             if not self.player_name:
                 self.update_status("Please enter your name")
@@ -410,7 +411,13 @@ class WikiRaceClient:
             text="Join Game",
             command=lambda: [mixer.Sound("./button.mp3").play(), join_game()],
             font=("Arial", 16)
-        ).pack(pady=20)
+        ).pack(pady=10)
+        customtkinter.CTkButton(
+            self.root,
+            text="New Game",
+            command=lambda: [mixer.Sound("./button.mp3").play(), join_game("NG")],
+            font=("Arial", 16)
+        ).pack(pady=10)
 
         self.root.protocol("WM_DELETE_WINDOW", self.disconnect)
 
