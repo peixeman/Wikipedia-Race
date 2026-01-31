@@ -384,7 +384,14 @@ class WikiRaceServer:
             "results": results
         })
 
+        lobby["article_requests"].clear()
+        lobby["game_results"].clear()
+        lobby["all_ready_time"] = None
+        lobby["countdown_running"] = False
         lobby["game_active"] = False
+
+        for c in lobby["clients"].values():
+            c["ready"] = False
 
 
     def run(self):

@@ -246,22 +246,11 @@ class WikiRaceClient:
             if self.connected:
                 self.send_message({"type": "play_again"})
 
-            # Restart client in new process
-            mixer.stop()
-            subprocess.Popen([sys.executable, __file__, self.player_name, self.lobby_code, self.music_on])
-
-            # Close results window
             results_window.destroy()
 
-            # Close root window
-            if self.root:
-                try:
-                    self.root.destroy()
-                except:
-                    pass
-
-            # Exit current process
-            sys.exit(0)
+            # Restart
+            self.root = None
+            self.request_article()
 
         customtkinter.CTkButton(
             button_frame,
