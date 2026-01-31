@@ -283,7 +283,9 @@ class WikiRaceClient:
             except:
                 pass
         if self.root:
+            self.root.quit()
             self.root.destroy()
+            sys.exit()
 
 
     def start(self):
