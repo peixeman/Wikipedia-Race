@@ -6,7 +6,8 @@ Email: excaliber632@gmail.com
 
 ## Known Issues
 * ~~When quitting the game or playing again, the webdriver will open and close itself while reconnecting.~~ (ae7b740)
-* Quitting after playing more than one round continuously results in application hanging.
+* ~~Quitting after playing more than one round continuously results in application hanging.~~ (dbf75ba)
+* Extra submit screen after exitting application.
 
 ## Future Features
 * Special host menu and options.
