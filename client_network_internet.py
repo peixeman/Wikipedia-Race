@@ -2,7 +2,6 @@ import customtkinter
 import json
 from pygame import mixer
 import socket
-import subprocess
 import sys
 import threading
 
