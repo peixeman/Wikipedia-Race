@@ -8,6 +8,7 @@ Email: excaliber632@gmail.com
 * ~~When quitting the game or playing again, the webdriver will open and close itself while reconnecting.~~ (ae7b740)
 * ~~Quitting after playing more than one round continuously results in application hanging.~~ (dbf75ba)
 * ~~Extra submit screen after exitting application.~~ (9d73b42)
+* Quitting during game sometimes causes geckodriver persistence.
 
 ## Future Features
 * Special host menu and options.
