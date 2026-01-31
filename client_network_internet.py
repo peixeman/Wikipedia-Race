@@ -132,16 +132,10 @@ class WikiRaceClient:
         # Close current window
         if self.root:
             self.root.destroy()
+            self.root = None
 
         # Get article request from player
         article_request = clr.main(self.lobby_code)
-
-        if self.root:
-            try:
-                self.root.destroy()
-            except:
-                pass
-            self.root = None
 
         # Send to server
         self.send_message({
@@ -432,7 +426,7 @@ class WikiRaceClient:
 
         # If both player name and lobby code are provided, auto-connect
         if self.player_name and self.lobby_code:
-            self.root.after(10000, lambda: join_game(self.lobby_code))   # FIXME
+            self.root.after(20, lambda: join_game(self.lobby_code))
 
         self.root.mainloop()
 
