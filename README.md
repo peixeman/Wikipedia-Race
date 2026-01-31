@@ -22,6 +22,10 @@ NOTE: Wikipedia Race relies on the Selenium package for browsing Wikipedia's sit
 * Special host menu and options.
 * When player is finished, show them a "live feed" of players still searching.
 * Countdown mode: Players aim for a score to win the lobby.
+* Public / private lobbies with option to join a random lobby in the player menu.
+
+## Dev Goals
+* Show list of players in lobby during waiting screen.
 
 ##
 A Python-based server and client for playing multiplayer Wikipedia races.
