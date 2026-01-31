@@ -5,7 +5,7 @@ Challenge your friends to a multiplayer version of Wikipedia race!
 Email: excaliber632@gmail.com
 
 ## Known Issues
-* When quitting the game or playing again, the webdriver will open and close itself while reconnecting.
+* ~~When quitting the game or playing again, the webdriver will open and close itself while reconnecting.~~ (ae7b740)
 
 ## Future Features
 * Special host menu and options.
