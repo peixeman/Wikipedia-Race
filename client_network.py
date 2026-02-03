@@ -14,14 +14,14 @@ BUFFER_SIZE = 4096
 
 
 class WikiRaceClient:
-    def __init__(self, name=None, lobby=None, music_on="Off"):
+    def __init__(self):
         self.server_socket = None
         self.server_ip = SERVER_ADDRESS
         self.server_port = TCP_PORT
 
-        self.player_name = name
-        self.lobby_code = lobby
-        self.music_on = music_on
+        self.player_name = None
+        self.lobby_code = None
+        self.music_on = "Off"
 
         self.connected = False
         self.running = True
@@ -29,6 +29,8 @@ class WikiRaceClient:
         self.root = None
         self.current_frame = None
         self.status_label = None
+
+        self.player_count = 0
 
 
     # UI helpers
@@ -107,6 +109,9 @@ class WikiRaceClient:
             end_article = message.get("end_article")
             self.start_game(start_article, end_article)
 
+        elif msg_type == "receive_player_count":
+            self.player_count = int(message.get("player_count"))
+
         elif msg_type == "game_results":
             results = message.get("results")
             self.show_results(results)
@@ -183,9 +188,12 @@ class WikiRaceClient:
     def show_waiting_screen(self):
         frame = customtkinter.CTkFrame(self.root)
 
+        self.send_message({"type": "waiting"})
+
         customtkinter.CTkLabel(frame, text="Waiting for game", font=("Arial", 20)).pack()
         customtkinter.CTkLabel(frame, text=self.lobby_code, font=("Arial", 30, "bold")).pack()
         customtkinter.CTkLabel(frame, text="to start...", font=("Arial", 20)).pack()
+        customtkinter.CTkLabel(frame, text=f"{self.player_count} players in lobby", font=("Arial", 30)).pack()
 
         self.status_label = customtkinter.CTkLabel(frame, text="Article request submitted", font=("Arial", 14))
         self.status_label.pack(pady=20)

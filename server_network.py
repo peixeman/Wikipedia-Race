@@ -189,6 +189,7 @@ class WikiRaceServer:
                             "lobby_code": lobby_code,
                             "message": f"Connected to lobby {lobby_code}"
                         })
+
                 elif msg_type == "article_request":
                     if client_lobby and client_lobby in self.lobbies:
                         lobby = self.lobbies[client_lobby]
@@ -206,6 +207,15 @@ class WikiRaceServer:
                             if not lobby.get("countdown_running", False):
                                 lobby["countdown_running"] = True
                                 threading.Thread(target=self.lobby_countdown, args=(client_lobby,), daemon=True).start()
+
+                elif msg_type == "waiting":
+                    if client_lobby and client_lobby in self.lobbies:
+                        lobby = self.lobbies[client_lobby]
+                        self.send_message(client_socket, {
+                            "type": "receive_player_count",
+                            "player_count": len(lobby["clients"]),
+                        })
+
                 elif msg_type == "game_result":
                     if client_lobby and client_lobby in self.lobbies:
                         lobby = self.lobbies[client_lobby]
@@ -221,6 +231,7 @@ class WikiRaceServer:
                         if len(lobby["game_results"]) == len(lobby["clients"]):
                             print(f"All players finished in lobby {client_lobby}")
                             self.calculate_and_send_results(client_lobby)
+
                 elif msg_type == "play_again":
                     if client_lobby and client_lobby in self.lobbies:
                         lobby = self.lobbies[client_lobby]
