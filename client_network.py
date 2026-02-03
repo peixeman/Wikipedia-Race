@@ -303,12 +303,5 @@ class WikiRaceClient:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) >= 4:
-        player_name = sys.argv[-3]
-        lobby_code = sys.argv[-2]
-        music_setting = sys.argv[-1]
-        client = WikiRaceClient(name=player_name, lobby=lobby_code, music_on=music_setting)
-    else:
-        client = WikiRaceClient(name=None, lobby=None, music_on="Off")
-
+    client = WikiRaceClient()
     client.start()
