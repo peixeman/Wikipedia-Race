@@ -159,7 +159,7 @@ class GameFrame(customtkinter.CTkFrame):
             width=480,
             height=220,
             wrap="word",
-            font=("Arial", 15),
+            font=("Arial", 15)
         )
         hint.insert(index="1.0", text=hint_text)
         hint.place(relx=0.39, rely=0.7, anchor=customtkinter.CENTER)
