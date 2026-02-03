@@ -200,6 +200,21 @@ class WikiRaceClient:
         self.show_frame(frame)
 
 
+    def show_early_completion_screen(self):
+        frame = customtkinter.CTkFrame(self.root)
+
+        customtkinter.CTkLabel(frame, text="Waiting for players to complete", font=("Arial", 20)).pack(pady=50)
+
+        customtkinter.CTkButton(
+            frame,
+            text="Disconnect",
+            command=lambda: [mixer.Sound("./button.mp3").play(), self.disconnect()],
+            fg_color="red"
+        ).pack(pady=20)
+
+        self.show_frame(frame)
+
+
     def start_game(self, start_article, end_article):
         def on_finish(game_result):
             # Send results
@@ -212,7 +227,7 @@ class WikiRaceClient:
                     "articles": game_result["articles"]
                 })
             # Return to waiting
-            self.show_waiting_screen()
+            self.show_early_completion_screen()
 
 
         frame = GameFrame(self.root, start_article, end_article, self.player_name, on_finish)
@@ -226,8 +241,8 @@ class WikiRaceClient:
         results_frame.pack(pady=20, padx=20, fill="both", expand=True)
 
         for result in results:
-            result_text = f"#{result['rank']} {result['name']}      Score: {result.get('total_points', 0)}\n"
-            result_text += f"   Status: {result['status']} | Clicks: {result['clicks']} | Time: {result['time']:.1f}s\n"
+            result_text = f"#{result["rank"]} {result["name"]}      Score: {result.get("total_points", 0)}\n"
+            result_text += f"   Status: {result["status"]} | Clicks: {result["clicks"]} | Time: {result["time"]:.1f}s\n"
 
             customtkinter.CTkLabel(results_frame, text=result_text, font=("Arial", 14), justify="left").pack(
                 pady=5, anchor="w", padx=10
