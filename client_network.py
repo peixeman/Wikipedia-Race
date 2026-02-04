@@ -111,6 +111,8 @@ class WikiRaceClient:
 
         elif msg_type == "receive_player_count":
             self.player_count = int(message.get("player_count"))
+            # Update waiting screen
+            self.show_waiting_screen()
 
         elif msg_type == "game_results":
             results = message.get("results")
@@ -188,6 +190,7 @@ class WikiRaceClient:
     def show_waiting_screen(self):
         frame = customtkinter.CTkFrame(self.root)
 
+        print(self.player_count)
         customtkinter.CTkLabel(frame, text="Waiting for game", font=("Arial", 20)).pack()
         customtkinter.CTkLabel(frame, text=self.lobby_code, font=("Arial", 30, "bold")).pack()
         customtkinter.CTkLabel(frame, text="to start...", font=("Arial", 20)).pack()
