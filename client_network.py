@@ -8,8 +8,8 @@ import threading
 from client_requests_frame import ArticleRequestFrame
 from client_main import GameFrame
 
-SERVER_ADDRESS = "crossover.proxy.rlwy.net"
-TCP_PORT = 20904
+SERVER_ADDRESS = "yamabiko.proxy.rlwy.net"
+TCP_PORT = 44002
 BUFFER_SIZE = 4096
 
 
