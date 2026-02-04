@@ -118,6 +118,10 @@ class WikiRaceServer:
             if not all(c["ready"] for c in lobby["clients"].values()):
                 lobby["countdown_running"] = False
                 return
+            self.broadcast_to_lobby(lobby_code, {
+                "type": "receive_player_count",
+                "player_count": len(lobby["clients"]),
+            })
             time.sleep(0.25)
 
         if lobby_code in self.lobbies and all(c["ready"] for c in lobby["clients"].values()):
@@ -207,14 +211,6 @@ class WikiRaceServer:
                             if not lobby.get("countdown_running", False):
                                 lobby["countdown_running"] = True
                                 threading.Thread(target=self.lobby_countdown, args=(client_lobby,), daemon=True).start()
-
-                elif msg_type == "waiting":
-                    if client_lobby and client_lobby in self.lobbies:
-                        lobby = self.lobbies[client_lobby]
-                        self.send_message(client_socket, {
-                            "type": "receive_player_count",
-                            "player_count": len(lobby["clients"]),
-                        })
 
                 elif msg_type == "game_result":
                     if client_lobby and client_lobby in self.lobbies:

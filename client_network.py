@@ -188,8 +188,6 @@ class WikiRaceClient:
     def show_waiting_screen(self):
         frame = customtkinter.CTkFrame(self.root)
 
-        self.send_message({"type": "waiting"})
-
         customtkinter.CTkLabel(frame, text="Waiting for game", font=("Arial", 20)).pack()
         customtkinter.CTkLabel(frame, text=self.lobby_code, font=("Arial", 30, "bold")).pack()
         customtkinter.CTkLabel(frame, text="to start...", font=("Arial", 20)).pack()
