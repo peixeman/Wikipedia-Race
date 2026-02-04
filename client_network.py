@@ -67,15 +67,13 @@ class WikiRaceClient:
                 "name": self.player_name,
                 "lobby_code": lobby
             })
-
-            self.connected = True
-            self.update_status("Connected to lobby")
-
-            threading.Thread(target=self.listen_to_server, daemon=True).start()
-            return True
         except Exception as e:
             self.update_status(f"Connection failed: {e}")
             return False
+        else:
+            self.connected = True
+            threading.Thread(target=self.listen_to_server, daemon=True).start()
+            return True
 
 
     def listen_to_server(self):
@@ -87,6 +85,7 @@ class WikiRaceClient:
                 message = json.loads(data)
                 self.root.after(0, lambda m=message: self.handle_server_message(m))
             except Exception as e:
+                self.update_status("Error in server communication")
                 print(f"Error receiving message: {e}")
                 break
         self.connected = False
@@ -96,6 +95,7 @@ class WikiRaceClient:
         msg_type = message.get("type")
 
         if msg_type == "join_success":
+            self.update_status("Connected to lobby")
             updated_lobby_code = message.get("lobby_code")
             if updated_lobby_code:
                 self.lobby_code = updated_lobby_code
