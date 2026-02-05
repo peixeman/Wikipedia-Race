@@ -212,6 +212,8 @@ class WikiRaceClient:
         self.player_count_label = customtkinter.CTkLabel(frame, text=f"Please wait...", font=("Arial", 20))
         self.player_count_label.pack()
 
+        self.update_player_count_label()
+
         self.status_label = customtkinter.CTkLabel(frame, text="Article request submitted", font=("Arial", 14))
         self.status_label.pack(pady=20)
 
