@@ -87,13 +87,19 @@ class WikiRaceClient:
 
 
     def listen_to_server(self):
+        buffer = ""
+
         while self.running and self.connected:
             try:
-                data = self.server_socket.recv(BUFFER_SIZE).decode()
-                if not data:
-                    break
-                message = json.loads(data)
-                self.root.after(0, lambda m=message: self.handle_server_message(m))
+                chunk = self.server_socket.recv(BUFFER_SIZE).decode()
+
+                buffer += chunk
+
+                while "\n" in buffer:
+                    line, buffer = buffer.split("\n", 1)
+                    if line.strip():
+                        message = json.loads(line)
+                        self.root.after(0, lambda m=message: self.handle_server_message(m))
             except Exception as e:
                 self.update_status("Error in server communication")
                 print(f"Error receiving message: {e}")

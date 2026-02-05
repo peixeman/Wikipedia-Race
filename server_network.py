@@ -118,15 +118,17 @@ class WikiRaceServer:
             if not all(c["ready"] for c in lobby["clients"].values()):
                 lobby["countdown_running"] = False
                 return
+            players = [
+                {
+                    "name": c["name"],
+                    "ready": c["ready"]
+                }
+                for c in lobby["clients"].values()
+            ]
             self.broadcast_to_lobby(lobby_code, {
                 "type": "receive_player_count",
-                "player_count": len(lobby["clients"]),
-                "players": lobby["clients"]
-            })
-            print({
-                "type": "receive_player_count",
-                "player_count": len(lobby["clients"]),
-                "players": lobby["clients"]
+                "player_count": len(players),
+                "players": players
             })
             time.sleep(0.25)
 
@@ -252,7 +254,8 @@ class WikiRaceServer:
     def send_message(self, client_socket, message):
         """Send JSON message to a client"""
         try:
-            client_socket.send(json.dumps(message).encode())
+            payload = json.dumps(message) + "\n"
+            client_socket.send(payload.encode())
         except:
             pass
 
