@@ -203,7 +203,7 @@ class WikiRaceClient:
         customtkinter.CTkLabel(frame, text="Waiting for game", font=("Arial", 20)).pack()
         customtkinter.CTkLabel(frame, text=self.lobby_code, font=("Arial", 30, "bold")).pack()
         customtkinter.CTkLabel(frame, text="to start...", font=("Arial", 20)).pack()
-        self.player_count_label = customtkinter.CTkLabel(frame, text=f"{self.player_count} players in lobby", font=("Arial", 20))
+        self.player_count_label = customtkinter.CTkLabel(frame, text=f"Please wait...", font=("Arial", 20))
         self.player_count_label.pack()
 
         self.status_label = customtkinter.CTkLabel(frame, text="Article request submitted", font=("Arial", 14))
