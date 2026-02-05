@@ -17,6 +17,7 @@ NOTE: Wikipedia Race relies on the Selenium package for browsing Wikipedia's sit
 * ~~Quitting after playing more than one round continuously results in application hanging.~~ (dbf75ba)
 * ~~Extra submit screen after exitting application.~~ (9d73b42)
 * Quitting during game can sometimes cause geckodriver persistence.
+* Player count in lobby is still WIP, customtkinter is creating errors that prevent the client-side update code from executing.
 
 ## Future Features
 * Special host menu and options.
