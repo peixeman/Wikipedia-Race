@@ -51,7 +51,7 @@ class WikiRaceClient:
     def update_player_count_label(self):
         if self.player_count_label and self.root:
             text = f"{self.player_count} player"
-            if self.player_count_label == 1:
+            if self.player_count_label != 1:
                 text += "s"
             text += " in lobby"
             self.root.after(0, lambda: self.player_count_label.configure(text=text))
