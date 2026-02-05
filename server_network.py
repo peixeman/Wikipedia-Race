@@ -123,6 +123,11 @@ class WikiRaceServer:
                 "player_count": len(lobby["clients"]),
                 "players": lobby["clients"]
             })
+            print({
+                "type": "receive_player_count",
+                "player_count": len(lobby["clients"]),
+                "players": lobby["clients"]
+            })
             time.sleep(0.25)
 
         if lobby_code in self.lobbies and all(c["ready"] for c in lobby["clients"].values()):
