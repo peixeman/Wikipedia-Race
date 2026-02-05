@@ -112,19 +112,16 @@ class WikiRaceServer:
         lobby = self.lobbies[lobby_code]
         start = time.time()
 
-        last_player_count = len(lobby["clients"])
         while time.time() - start < int(10 + (10 / (len(lobby["clients"]) if len(lobby["clients"]) > 0 else 1))):
             if lobby_code not in self.lobbies:
                 return
             if not all(c["ready"] for c in lobby["clients"].values()):
                 lobby["countdown_running"] = False
                 return
-            if last_player_count != len(lobby["clients"]):
-                self.broadcast_to_lobby(lobby_code, {
-                    "type": "receive_player_count",
-                    "player_count": len(lobby["clients"]),
-                })
-            last_player_count = len(lobby["clients"])
+            self.broadcast_to_lobby(lobby_code, {
+                "type": "receive_player_count",
+                "player_count": len(lobby["clients"]),
+            })
             time.sleep(0.25)
 
         if lobby_code in self.lobbies and all(c["ready"] for c in lobby["clients"].values()):

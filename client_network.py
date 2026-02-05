@@ -30,6 +30,7 @@ class WikiRaceClient:
         self.current_frame = None
         self.status_label = None
 
+        self.player_count_label = None
         self.player_count = 0
 
 
@@ -45,6 +46,11 @@ class WikiRaceClient:
         print(msg)
         if self.status_label and self.root:
             self.root.after(0, lambda: self.status_label.configure(text=msg))
+
+
+    def update_player_count_label(self):
+        if self.player_count_label and self.root:
+            self.root.after(0, lambda: self.player_count_label.configure(text=f"{self.player_count}"))
 
 
     # Networking
@@ -112,7 +118,7 @@ class WikiRaceClient:
         elif msg_type == "receive_player_count":
             self.player_count = int(message.get("player_count"))
             # Update waiting screen
-            self.show_waiting_screen()
+            self.update_player_count_label()
 
         elif msg_type == "game_results":
             results = message.get("results")
@@ -194,7 +200,8 @@ class WikiRaceClient:
         customtkinter.CTkLabel(frame, text="Waiting for game", font=("Arial", 20)).pack()
         customtkinter.CTkLabel(frame, text=self.lobby_code, font=("Arial", 30, "bold")).pack()
         customtkinter.CTkLabel(frame, text="to start...", font=("Arial", 20)).pack()
-        customtkinter.CTkLabel(frame, text=f"{self.player_count} players in lobby", font=("Arial", 30)).pack()
+        self.player_count_label = customtkinter.CTkLabel(frame, text=f"{self.player_count} players in lobby", font=("Arial", 30))
+        self.player_count_label.pack()
 
         self.status_label = customtkinter.CTkLabel(frame, text="Article request submitted", font=("Arial", 14))
         self.status_label.pack(pady=20)
