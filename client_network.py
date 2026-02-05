@@ -105,7 +105,7 @@ class WikiRaceClient:
         msg_type = message.get("type")
 
         if msg_type == "join_success":
-            self.update_status("Connected to lobby")
+            print("Connected to lobby")
             updated_lobby_code = message.get("lobby_code")
             if updated_lobby_code:
                 self.lobby_code = updated_lobby_code
