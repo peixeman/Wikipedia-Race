@@ -121,6 +121,7 @@ class WikiRaceServer:
             self.broadcast_to_lobby(lobby_code, {
                 "type": "receive_player_count",
                 "player_count": len(lobby["clients"]),
+                "players": lobby["clients"]
             })
             time.sleep(0.25)
 
