@@ -32,6 +32,8 @@ class WikiRaceClient:
 
         self.player_count_label = None
         self.player_count = 1
+        self.player_list_label = None
+        self.player_list = None
 
 
     # UI helpers
@@ -55,6 +57,11 @@ class WikiRaceClient:
                 text += "s"
             text += " in lobby"
             self.root.after(0, lambda: self.player_count_label.configure(text=text))
+        if self.player_list_label and self.root:
+            player_text = ""
+            for player in self.player_list:
+                player_text += f"• {player["name"]}\n"
+            self.root.after(0, lambda: self.player_list_label.configure(text=player_text))
 
 
     # Networking
@@ -127,6 +134,7 @@ class WikiRaceClient:
 
         elif msg_type == "receive_player_count":
             self.player_count = int(message.get("player_count"))
+            self.player_list = message.get("players")
             # Update waiting screen
             self.update_player_count_label()
 
@@ -210,19 +218,24 @@ class WikiRaceClient:
         customtkinter.CTkLabel(frame, text=self.lobby_code, font=("Arial", 30, "bold")).pack()
         customtkinter.CTkLabel(frame, text="to start...", font=("Arial", 20)).pack()
         self.player_count_label = customtkinter.CTkLabel(frame, text=f"Please wait...", font=("Arial", 20))
-        self.player_count_label.pack()
+        self.player_count_label.pack(pady=10)
 
-        self.update_player_count_label()
-
-        self.status_label = customtkinter.CTkLabel(frame, text="Article request submitted", font=("Arial", 14))
-        self.status_label.pack(pady=20)
+        self.player_list_label = customtkinter.CTkLabel(
+            frame,
+            text=f"Loading players...",
+            font=("Arial", 16),
+            width=300,
+            anchor="w",
+            justify="left"
+        )
+        self.player_list_label.pack()
 
         customtkinter.CTkButton(
             frame,
             text="Disconnect",
             command=lambda: [mixer.Sound("./button.mp3").play(), self.disconnect()],
             fg_color="red"
-        ).pack(pady=20)
+        ).place(relx=0.5, rely=0.9, anchor="center")
 
         self.show_frame(frame)
 
