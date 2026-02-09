@@ -23,7 +23,7 @@ class WikiRaceServer:
         self.running = True
         self.mediawiki = MediaWikiAPI()
         self.headless = headless
-        self.player_stats = self.load_player_stats(None)
+        self.player_stats = {}
 
 
     def load_player_stats(self, lobby):
@@ -46,15 +46,18 @@ class WikiRaceServer:
         """Save persistent player stats to disk"""
         try:
             with open(f"{lobby}.json", "w", encoding="utf-8") as f:
-                json.dump(self.player_stats, f, indent=2)
+                json.dump(self.player_stats[lobby], f, indent=2)
         except Exception as e:
             print(f"Failed to save stats file: {e}")
 
 
-    def ensure_player_stats(self, player_name):
+    def ensure_player_stats(self, player_name, lobby):
         """Ensure a player exists in the stats dict"""
-        if player_name not in self.player_stats:
-            self.player_stats[player_name] = {
+        if lobby not in self.player_stats:
+            self.player_stats[lobby] = {}
+
+        if player_name not in self.player_stats[lobby]:
+            self.player_stats[lobby][player_name] = {
                 "points": 0,
                 "wins": 0,
                 "clicks": 0,
@@ -65,13 +68,13 @@ class WikiRaceServer:
     def reset_player_stats(self, lobby):
         """Delete the stats JSON file and clear in-memory stats"""
         print("Resetting player stats...")
-        self.player_stats = {}
+        self.player_stats[lobby] = {}
 
         try:
             if os.path.exists(f"{lobby}.json"):
                 os.remove(f"{lobby}.json")
                 print(f"Deleted {f"{lobby}.json"}")
-        except Exception as e:
+        except Exception:
             print(f"Failed to delete stats file: {f"{lobby}.json"}")
 
 
@@ -104,6 +107,7 @@ class WikiRaceServer:
             "game_results": {},
             "game_active": False
         }
+        self.player_stats[lobby_code] = self.load_player_stats(lobby_code)
         print(f"Created lobby: {lobby_code}")
         return lobby_code
 
@@ -192,7 +196,7 @@ class WikiRaceServer:
                             "ready": False
                         }
 
-                        self.ensure_player_stats(player_name)
+                        self.ensure_player_stats(player_name, lobby_code)
                         self.save_player_stats(lobby_code)
 
                         print(f"{player_name} joined lobby {lobby_code}")
@@ -363,16 +367,16 @@ class WikiRaceServer:
             else:
                 score = 350
 
-            self.ensure_player_stats(player_name)
+            self.ensure_player_stats(player_name, lobby_code)
 
-            self.player_stats[player_name]["points"] += score
-            self.player_stats[player_name]["games_played"] += 1
-            self.player_stats[player_name]["clicks"] += int(result["clicks"])
-            self.player_stats[player_name]["time_played"] += round(float(result["time"]))
+            self.player_stats[lobby_code][player_name]["points"] += score
+            self.player_stats[lobby_code][player_name]["games_played"] += 1
+            self.player_stats[lobby_code][player_name]["clicks"] += int(result["clicks"])
+            self.player_stats[lobby_code][player_name]["time_played"] += round(float(result["time"]))
             if result["status"] == "Win":
-                self.player_stats[player_name]["wins"] += 1
+                self.player_stats[lobby_code][player_name]["wins"] += 1
 
-            total_points = self.player_stats[player_name]["points"]
+            total_points = self.player_stats[lobby_code][player_name]["points"]
 
             results.append({
                 "name": player_name,
@@ -449,7 +453,8 @@ class WikiRaceServer:
                             print("No active lobbies")
                         else:
                             for code, lobby in self.lobbies.items():
-                                print(f"Lobby {code}: {len(lobby["clients"])} players")
+                                for p_socket in lobby["clients"]:
+                                    print(f"Lobby {code}: {lobby["clients"][p_socket]}")
                     
                     elif cmd == "quit":
                         print("Shutting down...")
