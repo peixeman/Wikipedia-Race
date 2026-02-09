@@ -13,7 +13,7 @@ import threading
 TCP_PORT = int(os.environ.get("PORT", 5555))
 BUFFER_SIZE = 4096
 
-PLAYER_STATS_FILE = "wiki_race_player_stats.json"
+#PLAYER_STATS_FILE = "wiki_race_player_stats.json"
 
 
 class WikiRaceServer:
@@ -23,16 +23,16 @@ class WikiRaceServer:
         self.running = True
         self.mediawiki = MediaWikiAPI()
         self.headless = headless
-        self.player_stats = self.load_player_stats()
+        self.player_stats = self.load_player_stats(None)
 
 
-    def load_player_stats(self):
+    def load_player_stats(self, lobby):
         """Load persistent player stats from disk"""
-        if not os.path.exists(PLAYER_STATS_FILE):
+        if not os.path.exists(f"{lobby}.json"):
             return {}
 
         try:
-            with open(PLAYER_STATS_FILE, "r", encoding="utf-8") as f:
+            with open(f"{lobby}.json", "r", encoding="utf-8") as f:
                 data = json.load(f)
                 if isinstance(data, dict):
                     return data
@@ -42,10 +42,10 @@ class WikiRaceServer:
         return {}
 
 
-    def save_player_stats(self):
+    def save_player_stats(self, lobby):
         """Save persistent player stats to disk"""
         try:
-            with open(PLAYER_STATS_FILE, "w", encoding="utf-8") as f:
+            with open(f"{lobby}.json", "w", encoding="utf-8") as f:
                 json.dump(self.player_stats, f, indent=2)
         except Exception as e:
             print(f"Failed to save stats file: {e}")
@@ -62,17 +62,17 @@ class WikiRaceServer:
                 "time_played": 0.0
             }
 
-    def reset_player_stats(self):
+    def reset_player_stats(self, lobby):
         """Delete the stats JSON file and clear in-memory stats"""
         print("Resetting player stats...")
         self.player_stats = {}
 
         try:
-            if os.path.exists(PLAYER_STATS_FILE):
-                os.remove(PLAYER_STATS_FILE)
-                print(f"Deleted {PLAYER_STATS_FILE}")
+            if os.path.exists(f"{lobby}.json"):
+                os.remove(f"{lobby}.json")
+                print(f"Deleted {f"{lobby}.json"}")
         except Exception as e:
-            print(f"Failed to delete stats file: {e}")
+            print(f"Failed to delete stats file: {f"{lobby}.json"}")
 
 
     def generate_lobby_code(self):
@@ -193,7 +193,7 @@ class WikiRaceServer:
                         }
 
                         self.ensure_player_stats(player_name)
-                        self.save_player_stats()
+                        self.save_player_stats(lobby_code)
 
                         print(f"{player_name} joined lobby {lobby_code}")
                         self.send_message(client_socket, {
@@ -286,7 +286,7 @@ class WikiRaceServer:
             if len(lobby["clients"]) == 0:
                 print(f"Lobby {lobby_code} is empty, deleting...")
                 del self.lobbies[lobby_code]
-                self.reset_player_stats()
+                self.reset_player_stats(lobby_code)
         
         try:
             client_socket.close()
@@ -383,7 +383,7 @@ class WikiRaceServer:
                 "total_points": total_points
             })
 
-        self.save_player_stats()
+        self.save_player_stats(lobby_code)
 
         # Sort by score
         results.sort(key=lambda x: x["total_points"])
