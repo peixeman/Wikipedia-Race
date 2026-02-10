@@ -17,7 +17,7 @@ NOTE: Wikipedia Race relies on the Selenium package for browsing Wikipedia's sit
 * ~~Quitting after playing more than one round continuously results in application hanging.~~ (dbf75ba)
 * ~~Extra submit screen after exitting application.~~ (9d73b42)
 * Quitting during game can sometimes cause geckodriver persistence.
-* Player count in lobby is still WIP, customtkinter is creating errors that prevent the client-side update code from executing.
+* ~~Player count in lobby is still WIP, customtkinter is creating errors that prevent the client-side update code from executing.~~ (v1.1.0)
 
 ## Future Features
 * Special host menu and options.
@@ -26,7 +26,7 @@ NOTE: Wikipedia Race relies on the Selenium package for browsing Wikipedia's sit
 * Public / private lobbies with option to join a random lobby in the player menu.
 
 ## Dev Goals
-* Show list of players in lobby during waiting screen.
+* ~~Show list of players in lobby during waiting screen.~~ (v.1.1.0)
 
 ##
 A Python-based server and client for playing multiplayer Wikipedia races.
